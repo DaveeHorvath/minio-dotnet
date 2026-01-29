@@ -411,20 +411,23 @@ internal class V4Authenticator
             queryParams = sb1.ToString();
         }
 
-        var isFormData = false;
-        if (requestBuilder.Request.Content?.Headers?.ContentType is not null)
-            isFormData = string.Equals(requestBuilder.Request.Content.Headers.ContentType.ToString(),
-                "application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase);
-
-        if (string.IsNullOrEmpty(queryParams) && isFormData)
+        using (var request = requestBuilder.Request)
         {
-            // Convert stream content to byte[]
-            var cntntByteData = Span<byte>.Empty;
-            if (requestBuilder.Request.Content is not null)
-                cntntByteData = requestBuilder.Request.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+            var isFormData = false;
+            if (request.Content?.Headers?.ContentType is not null)
+                isFormData = string.Equals(request.Content.Headers.ContentType.ToString(),
+                    "application/x-www-form-urlencoded", StringComparison.OrdinalIgnoreCase);
 
-            // UTF conversion - String from bytes
-            queryParams = Encoding.UTF8.GetString(cntntByteData);
+            if (string.IsNullOrEmpty(queryParams) && isFormData)
+            {
+                // Convert stream content to byte[]
+                var cntntByteData = Span<byte>.Empty;
+                if (request.Content is not null)
+                    cntntByteData = requestBuilder.Request.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+
+                // UTF conversion - String from bytes
+                queryParams = Encoding.UTF8.GetString(cntntByteData);
+            }
         }
 
         if (!string.IsNullOrEmpty(queryParams) &&
