@@ -93,7 +93,10 @@ internal class V4Authenticator
 
         SetContentSha256(requestBuilder, isSts);
 
-        requestBuilder.RequestUri = requestBuilder.Request.RequestUri;
+        using (var request = requestBuilder.Request)
+        {
+            requestBuilder.RequestUri = request.RequestUri;
+        }
         var requestUri = requestBuilder.RequestUri;
 
         if (requestUri.Port is 80 or 443)
