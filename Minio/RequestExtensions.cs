@@ -112,6 +112,7 @@ public static class RequestExtensions
                 HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken).ConfigureAwait(false);
 
+            responseResult.Response.Dispose();
             responseResult = new ResponseResult(request, response);
             if (requestMessageBuilder.ResponseWriter is not null)
                 await requestMessageBuilder.ResponseWriter(responseResult.ContentStream, cancellationToken)
