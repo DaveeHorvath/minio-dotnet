@@ -423,7 +423,7 @@ internal class V4Authenticator
                 // Convert stream content to byte[]
                 var cntntByteData = Span<byte>.Empty;
                 if (request.Content is not null)
-                    cntntByteData = requestBuilder.Request.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
+                    cntntByteData = request.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
 
                 // UTF conversion - String from bytes
                 queryParams = Encoding.UTF8.GetString(cntntByteData);
